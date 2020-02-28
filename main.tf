@@ -1,5 +1,5 @@
-data "aws_availability_zones" "available" {
-}
+data "aws_availability_zones" "available" {}
+data "aws_region" "current" {}
 
 resource "aws_vpc" "main" {
   cidr_block = var.cidr_block
@@ -70,3 +70,16 @@ resource "aws_route_table_association" "private" {
   route_table_id = element(aws_route_table.private.*.id, count.index)
 }
 
+resource "aws_vpc_endpoint" "s3" {
+  count = var.private_s3_endpoint ? 1 : 0
+
+  vpc_id       = aws_vpc.main.id
+  service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
+}
+
+resource "aws_vpc_endpoint_route_table_association" "s3" {
+  count = var.private_s3_endpoint ? var.az_count : 0
+
+  route_table_id  = aws_route_table.private[count.index].id
+  vpc_endpoint_id = aws_vpc_endpoint.s3[0].id
+}

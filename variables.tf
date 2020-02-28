@@ -11,3 +11,9 @@ variable "az_count" {
   description = "Number of AZs to cover in a given AWS region"
   default     = "2"
 }
+
+variable "private_s3_endpoint" {
+  description = "Boolean to enable adding an s3 vpc endpoint to the private subnets"
+  type        = bool
+  default     = false
+}
