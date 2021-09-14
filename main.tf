@@ -2,7 +2,8 @@ data "aws_availability_zones" "available" {}
 data "aws_region" "current" {}
 
 resource "aws_vpc" "main" {
-  cidr_block = var.cidr_block
+  cidr_block           = var.cidr_block
+  enable_dns_hostnames = var.enable_dns_hostnames
 
   tags = {
     Name = var.name

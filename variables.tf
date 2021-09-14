@@ -17,3 +17,9 @@ variable "private_s3_endpoint" {
   type        = bool
   default     = false
 }
+
+variable "enable_dns_hostnames" {
+  description = "Boolean to enable or disable support for DNS hostname resolution"
+  type        = bool
+  default     = false
+}
