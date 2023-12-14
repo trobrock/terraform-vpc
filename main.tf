@@ -45,12 +45,12 @@ resource "aws_route" "internet_access" {
 
 resource "aws_eip" "gw" {
   count      = var.az_count
-  vpc        = true
+  domain     = "vpc"
   depends_on = [aws_internet_gateway.gw]
 }
 
 resource "aws_nat_gateway" "gw" {
-  count         = var.az_count
+  count         = var.private_subnets ? var.az_count : 0
   subnet_id     = element(aws_subnet.public.*.id, count.index)
   allocation_id = element(aws_eip.gw.*.id, count.index)
 }
