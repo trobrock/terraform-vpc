@@ -23,3 +23,9 @@ variable "enable_dns_hostnames" {
   type        = bool
   default     = false
 }
+
+variable "private_subnets" {
+  description = "Boolean to enable or disable private subnets"
+  type        = bool
+  default     = true
+}

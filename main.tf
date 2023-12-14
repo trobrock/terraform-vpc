@@ -11,7 +11,7 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_subnet" "private" {
-  count             = var.az_count
+  count             = var.private_subnets ? var.az_count : 0
   cidr_block        = cidrsubnet(aws_vpc.main.cidr_block, 8, count.index)
   availability_zone = data.aws_availability_zones.available.names[count.index]
   vpc_id            = aws_vpc.main.id
@@ -56,7 +56,7 @@ resource "aws_nat_gateway" "gw" {
 }
 
 resource "aws_route_table" "private" {
-  count  = var.az_count
+  count  = var.private_subnets ? var.az_count : 0
   vpc_id = aws_vpc.main.id
 
   route {
@@ -66,20 +66,20 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  count          = var.az_count
+  count          = var.private_subnets ? var.az_count : 0
   subnet_id      = element(aws_subnet.private.*.id, count.index)
   route_table_id = element(aws_route_table.private.*.id, count.index)
 }
 
 resource "aws_vpc_endpoint" "s3" {
-  count = var.private_s3_endpoint ? 1 : 0
+  count = var.private_s3_endpoint && var.private_subnets ? 1 : 0
 
   vpc_id       = aws_vpc.main.id
   service_name = "com.amazonaws.${data.aws_region.current.name}.s3"
 }
 
 resource "aws_vpc_endpoint_route_table_association" "s3" {
-  count = var.private_s3_endpoint ? var.az_count : 0
+  count = var.private_s3_endpoint && var.private_subnets ? var.az_count : 0
 
   route_table_id  = aws_route_table.private[count.index].id
   vpc_endpoint_id = aws_vpc_endpoint.s3[0].id
